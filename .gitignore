@@ -46,3 +46,7 @@ Thumbs.db
 
 **/migrations/
 db.sqlite3
+
+#ENV
+venv/
+HRMS/.env
