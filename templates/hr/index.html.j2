@@ -42,8 +42,6 @@
         </nav>-->
         <div>
             {% if request.user.is_authenticated %}
-                Hi, <strong>{{ request.user.mobile_number }}</strong>
-                <a href="{{ url('dashboard') }}" class="btn btn-outline-primary mx-2">Dashboard</a>
                 <a href="{{ url('logout') }}" class="btn btn-outline-primary mx-2"><i class="fas fa-sign-out-alt"></i></a>
             {% else %}
                 <button class="btn btn-outline-primary mx-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
@@ -60,7 +58,12 @@
         <h1>HRMS - Employee Management Made Easy</h1>
         <p class="lead">Manage Attendance, Salary, Leave, and more with a seamless interface.</p>
         <div class="mt-4">
-            <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Get Started</button>
+            {% if request.user.is_authenticated %}
+                Welcome, <strong>{{ request.user.mobile_number }}</strong>
+                <a href="{{ url('dashboard') }}" class="btn btn-outline-primary mx-2">Dashboard</a>
+            {%else%}
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">Get Started</button>
+            {%endif%}
         </div>
     </div>
 </section>
