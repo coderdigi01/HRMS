@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login as auth_login , authenticate, logout
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import UserProfile
@@ -37,7 +37,7 @@ def validate_otp(request, mobile_number, otp_code):
 
         # Check if OTP matches and is valid (e.g., OTP valid for 5 minutes)
         if otp_record.otp == otp_code: #and otp_record.created_at > datetime.datetime.now() - datetime.timedelta(minutes=5):
-            login(request, user)
+            auth_login(request, user)
             otp_record.delete()  # Delete OTP after successful validation
             return JsonResponse({'success': True, 'message': 'OTP validated successfully'})
         else:
@@ -65,24 +65,41 @@ def user_signup(request):
 
 # OTP Login View
 def user_login(request):
+    print('hello')
     if request.method == 'POST':
         print(request.POST,121221)
-        mobile_number = request.POST.get('mobile_number')
-        get_otp = request.POST.get('send_otp')
-        verify_otp = request.POST.get('otp')
+        username = request.POST.get('mobile_number')
+        password = request.POST.get('password')
+        if not username and not password:
+                messages.error(request, 'Your username or password is not valid')
+                return redirect('/')
+        else:
+            user = authenticate(mobile_number=username, password=password)
+            if user is not None:
+                auth_login(request, user)
+                return redirect('dashboard')
+            else:
+                user_object = UserProfile.objects.filter(mobile_number=username)
+                if user_object.exists():
+                    messages.error(request, 'Your password is incorrect')
+                else:
+                    messages.error(request, 'Your username is incorrect')
+                return redirect('login')
+        #get_otp = request.POST.get('send_otp')
+        #verify_otp = request.POST.get('otp')
 
         # Simulate sending OTP
-        if get_otp == '1':
-            # Your logic to send OTP here
-            otp_sent = send_otp(mobile_number)
-            # Example: OTP sent successfully
-            otp_sent = True  # Simulate OTP sending success
-            if otp_sent:
-                return JsonResponse({'otp': True})  # OTP was sent
-            else:
-                return JsonResponse({'otp': False})  # OTP sending failed
-        if verify_otp:    
-            verified = validate_otp(request, mobile_number, verify_otp)
+        # if get_otp == '1':
+        #     # Your logic to send OTP here
+        #     otp_sent = send_otp(mobile_number)
+        #     # Example: OTP sent successfully
+        #     otp_sent = True  # Simulate OTP sending success
+        #     if otp_sent:
+        #         return JsonResponse({'otp': True})  # OTP was sent
+        #     else:
+        #         return JsonResponse({'otp': False})  # OTP sending failed
+        # if verify_otp:    
+        #     verified = validate_otp(request, mobile_number, verify_otp)
 
         # if 'get_otp' in request.POST:
         #     generated_otp = str(random.randint(100000, 999999))
