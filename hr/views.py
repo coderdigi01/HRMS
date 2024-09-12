@@ -9,3 +9,7 @@ def home(request):
 
 def dashboard(request):
     return render(request, 'hr/dashboard.html.j2')
+
+# attendance
+def userAttendanceView(request):
+    return render(request, 'hr/attendance/attendance.html.j2')
