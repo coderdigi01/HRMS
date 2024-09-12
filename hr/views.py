@@ -3,4 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 
 def home(request):
-    return render(request, 'hr/home.html.j2')
+    # return render(request, 'hr/home.html.j2')
+    return render(request, 'index.html.j2')
+
+
+def dashboard(request):
+    return render(request, 'dashboard.html.j2')
