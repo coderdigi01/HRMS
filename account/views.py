@@ -65,9 +65,7 @@ def user_signup(request):
 
 # OTP Login View
 def user_login(request):
-    print('hello')
     if request.method == 'POST':
-        print(request.POST,121221)
         username = request.POST.get('mobile_number')
         password = request.POST.get('password')
         if not username and not password:
@@ -116,6 +114,23 @@ def user_login(request):
         #     return JsonResponse({'error': 'Invalid OTP'})
 
     return render(request, 'index.html.j2')
+
+def forgot_password(request):
+    if request.method == 'POST':
+        data = request.POST
+        mobile = data.get('mobile')
+        password = data.get('confirm-pin')
+        if mobile:
+            user = UserProfile.objects.get(mobile_number=mobile)
+        else:
+            return JsonResponse({'success': False})
+        profile = UserProfile.objects.get(user=user)
+        profile.password=password
+        profile.save()
+        if user:
+            return redirect('dashboard')
+        else:
+            return redirect('login')
 
 # User Logout View
 def user_logout(request):
